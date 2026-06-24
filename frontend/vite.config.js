@@ -12,6 +12,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: { historyApiFallback: true },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
