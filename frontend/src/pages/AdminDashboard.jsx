@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { YarnSpinner, TableSkeleton } from "../components/decor/ThemedLoader.jsx";
+import api from "../lib/api.js";
+import Floral from "../components/decor/Floral.jsx";
+import Sprig from "../components/decor/Sprig.jsx";
 import {
   TrendingUp,
   Package,
@@ -25,6 +28,24 @@ import {
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Admin authentication
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem("admin_auth") === "true";
+  });
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    if (password === "admin123") {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("admin_auth", "true");
+      setLoginError("");
+    } else {
+      setLoginError("Invalid password. Please try again.");
+    }
+  };
 
   // Lightbox Modal for custom order images
   const [lightboxImage, setLightboxImage] = useState(null);
@@ -181,9 +202,8 @@ export default function AdminDashboard() {
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ["admin", "products"],
     queryFn: async () => {
-      const res = await fetch("/api/products");
-      if (!res.ok) throw new Error("Failed to fetch products");
-      return res.json();
+      const res = await api.get("/api/products");
+      return res.data;
     }
   });
 
@@ -191,9 +211,8 @@ export default function AdminDashboard() {
   const { data: orders = [], isLoading: isLoadingOrders } = useQuery({
     queryKey: ["admin", "orders"],
     queryFn: async () => {
-      const res = await fetch("/api/orders");
-      if (!res.ok) throw new Error("Failed to fetch orders");
-      return res.json();
+      const res = await api.get("/api/orders");
+      return res.data;
     }
   });
 
@@ -201,9 +220,8 @@ export default function AdminDashboard() {
   const { data: customOrders = [], isLoading: isLoadingCustomOrders } = useQuery({
     queryKey: ["admin", "custom-orders"],
     queryFn: async () => {
-      const res = await fetch("/api/custom-orders");
-      if (!res.ok) throw new Error("Failed to fetch custom orders");
-      return res.json();
+      const res = await api.get("/api/custom-orders");
+      return res.data;
     }
   });
 
@@ -211,22 +229,16 @@ export default function AdminDashboard() {
   const { data: subscribers = [], isLoading: isLoadingSubscribers } = useQuery({
     queryKey: ["admin", "subscribers"],
     queryFn: async () => {
-      const res = await fetch("/api/newsletter");
-      if (!res.ok) throw new Error("Failed to fetch subscribers");
-      return res.json();
+      const res = await api.get("/api/newsletter");
+      return res.data;
     }
   });
 
   // Mutations
   const updateOrderMutation = useMutation({
     mutationFn: async ({ id, status }) => {
-      const res = await fetch(`/api/orders/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status })
-      });
-      if (!res.ok) throw new Error("Failed to update order status");
-      return res.json();
+      const res = await api.put(`/api/orders/${id}`, { status });
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
@@ -235,13 +247,8 @@ export default function AdminDashboard() {
 
   const updateCustomOrderMutation = useMutation({
     mutationFn: async ({ id, status }) => {
-      const res = await fetch(`/api/custom-orders/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status })
-      });
-      if (!res.ok) throw new Error("Failed to update custom order status");
-      return res.json();
+      const res = await api.put(`/api/custom-orders/${id}`, { status });
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "custom-orders"] });
@@ -250,11 +257,8 @@ export default function AdminDashboard() {
 
   const deleteProductMutation = useMutation({
     mutationFn: async (id) => {
-      const res = await fetch(`/api/products/${id}`, {
-        method: "DELETE"
-      });
-      if (!res.ok) throw new Error("Failed to delete product");
-      return res.json();
+      const res = await api.delete(`/api/products/${id}`);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
@@ -288,15 +292,8 @@ export default function AdminDashboard() {
       formData.append("rating", productForm.rating);
       formData.append("img", productImage);
 
-      const res = await fetch("/api/products", {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to create product");
-      }
+      const res = await api.post("/api/products", formData);
+      const data = res.data;
 
       setFormSuccess("Product added successfully!");
       setProductForm({ name: "", price: "", category: "Crochet Flowers", rating: "0" });
@@ -304,7 +301,8 @@ export default function AdminDashboard() {
       setImagePreview(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
     } catch (err) {
-      setFormError(err.message || "Failed to create product.");
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to create product.";
+      setFormError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -327,6 +325,66 @@ export default function AdminDashboard() {
   const activeCustomRequestsCount = customOrders.filter(req => req.status === "reviewing").length;
   const subscribersCount = subscribers.length;
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden text-brown">
+        {/* Decor floaters */}
+        <div className="absolute top-10 left-10 opacity-30">
+          <Sprig className="w-16 h-24" />
+        </div>
+        <div className="absolute bottom-10 right-10 opacity-30">
+          <Floral className="w-24 h-12" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative paper rounded-3xl p-8 max-w-sm w-full shadow-card text-center border border-border/60 bg-cream/30"
+        >
+          <span className="tape -top-3 left-1/2 -translate-x-1/2 rotate-[-2deg]" />
+          <h2 className="font-display italic text-3xl mb-1 mt-2">Admin Portal</h2>
+          <p className="text-xs text-muted-foreground mb-6 uppercase tracking-wider">Stitch & Bloom Control Center</p>
+
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div className="text-left">
+              <label className="block text-xs font-semibold text-brown mb-1.5">Enter Admin Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-border bg-cream/40 outline-none focus:border-rose focus:ring-1 focus:ring-rose text-sm transition"
+              />
+            </div>
+
+            {loginError && (
+              <p className="text-xs text-rose-dark font-medium bg-rose/10 py-2 px-3 rounded-lg border border-rose/15">
+                {loginError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="w-full btn-rose py-2.5 rounded-xl text-sm font-semibold shadow-soft hover:scale-[1.01] transition-transform"
+            >
+              Access Dashboard
+            </button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-border/40">
+            <a
+              href="/"
+              className="text-xs font-medium text-muted-foreground hover:text-rose-dark transition underline"
+            >
+              Return to main store
+            </a>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
       {/* Header Banner */}
@@ -338,6 +396,15 @@ export default function AdminDashboard() {
             <p className="text-xs tracking-widest uppercase text-muted-foreground mt-1">Stitch & Bloom E-Commerce Admin</p>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={() => {
+                setIsAuthenticated(false);
+                sessionStorage.removeItem("admin_auth");
+              }}
+              className="px-4 py-2 text-xs font-semibold rounded-full border border-border text-rose-dark hover:bg-rose/5 transition"
+            >
+              Log Out 🔒
+            </button>
             <a
               href="/"
               className="px-4 py-2 text-xs font-semibold rounded-full border border-border text-brown hover:bg-muted transition flex items-center gap-1.5"

@@ -35,6 +35,7 @@ import CustomOrderModal from "../components/custom-order/CustomOrderModal.jsx";
 import Floral from "../components/decor/Floral.jsx";
 import Sprig from "../components/decor/Sprig.jsx";
 import Butterfly from "../components/decor/Butterfly.jsx";
+import api from "../lib/api.js";
 
 export default function Products() {
   const { addToCart } = useCart();
@@ -51,9 +52,8 @@ export default function Products() {
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await fetch("/api/products");
-      if (!res.ok) throw new Error("Failed to fetch products");
-      return res.json();
+      const res = await api.get("/api/products");
+      return res.data;
     }
   });
 
@@ -94,7 +94,7 @@ export default function Products() {
 
   return (
     <div className="min-h-screen text-foreground pb-24 md:pb-0 relative bg-background">
-      <Header onOpenCustomOrder={() => setCustomOrderOpen(true)} />
+      <Header onOpenCustomOrder={() => setCustomOrderOpen(true)} search={search} setSearch={setSearch} />
 
       {/* Hero Banner Section */}
       <section className="relative overflow-hidden py-10 md:py-14 bg-cream/30 border-b border-border/40">

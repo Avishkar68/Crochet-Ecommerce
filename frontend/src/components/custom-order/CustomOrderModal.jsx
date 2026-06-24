@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle } from "lucide-react";
+import api from "../../lib/api.js";
 
 export default function CustomOrderModal({ open, onClose }) {
   const [isSubmittingCustom, setIsSubmittingCustom] = useState(false);
@@ -12,18 +13,16 @@ export default function CustomOrderModal({ open, onClose }) {
 
     setIsSubmittingCustom(true);
     try {
-      const res = await fetch("/api/custom-orders", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const res = await api.post("/api/custom-orders", formData);
+      const data = res.data;
+      if (data.success) {
         setCustomSuccess(true);
       } else {
         alert(data.error || "Failed to submit request.");
       }
     } catch (error) {
-      alert("An error occurred.");
+      const errorMessage = error.response?.data?.error || "An error occurred.";
+      alert(errorMessage);
     } finally {
       setIsSubmittingCustom(false);
     }

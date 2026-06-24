@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Mail, Instagram, Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 import Floral from "../decor/Floral.jsx";
 import Sprig from "../decor/Sprig.jsx";
+import api from "../../lib/api.js";
 
 export default function Footer() {
   const [newsletterEmail, setNewsletterEmail] = useState("");
@@ -12,13 +14,9 @@ export default function Footer() {
     if (!newsletterEmail) return;
     setNewsletterStatus("loading");
     try {
-      const res = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newsletterEmail }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const res = await api.post("/api/newsletter", { email: newsletterEmail });
+      const data = res.data;
+      if (data.success) {
         setNewsletterStatus("success");
         setNewsletterEmail("");
       } else {
@@ -27,6 +25,8 @@ export default function Footer() {
       }
     } catch (error) {
       setNewsletterStatus("error");
+      const errorMessage = error.response?.data?.error || "Subscription failed.";
+      alert(errorMessage);
     }
   };
 
@@ -84,18 +84,33 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          {[
-            { t: "Shop", l: ["All Products", "Best Sellers", "New Arrivals", "Ready to Ship"] },
-            { t: "Information", l: ["About Us", "Shipping & Delivery", "Returns & Exchanges", "Privacy Policy"] },
-            { t: "Customer Care", l: ["Custom Orders", "Contact Us", "Track Your Order", "FAQs"] },
-          ].map(col => (
-            <div key={col.t}>
-              <p className="font-display text-lg mb-3">{col.t}</p>
-              <ul className="space-y-2 text-sm text-cream/85">
-                {col.l.map(li => <li key={li}><a href="#" className="hover:text-cream transition">{li}</a></li>)}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <p className="font-display text-lg mb-3">Shop</p>
+            <ul className="space-y-2 text-sm text-cream/85">
+              <li><Link to="/products" className="hover:text-cream transition">All Products</Link></li>
+              <li><Link to="/#shop" className="hover:text-cream transition">Best Sellers</Link></li>
+              <li><Link to="/products" className="hover:text-cream transition">New Arrivals</Link></li>
+              <li><Link to="/products" className="hover:text-cream transition">Ready to Ship</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-display text-lg mb-3">Information</p>
+            <ul className="space-y-2 text-sm text-cream/85">
+              <li><Link to="/#maker" className="hover:text-cream transition">About Us</Link></li>
+              <li><a href="#" className="hover:text-cream transition">Shipping & Delivery</a></li>
+              <li><a href="#" className="hover:text-cream transition">Returns & Exchanges</a></li>
+              <li><a href="#" className="hover:text-cream transition">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-display text-lg mb-3">Customer Care</p>
+            <ul className="space-y-2 text-sm text-cream/85">
+              <li><Link to="/#maker" className="hover:text-cream transition">Custom Orders</Link></li>
+              <li><a href="#" className="hover:text-cream transition">Contact Us</a></li>
+              <li><a href="#" className="hover:text-cream transition">Track Your Order</a></li>
+              <li><a href="#" className="hover:text-cream transition">FAQs</a></li>
+            </ul>
+          </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-8 mt-10">
           <p className="font-display text-lg mb-3">Let's stay connected <span className="text-rose">♡</span></p>

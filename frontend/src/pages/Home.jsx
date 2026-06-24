@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, Instagram, Scissors, Leaf, Package, MapPin, ArrowRight, Sparkles, Heart
@@ -14,6 +14,7 @@ import MobileNav from "../components/layout/MobileNav.jsx";
 // Product components
 import ProductCard from "../components/products/ProductCard.jsx";
 import { CardSkeleton } from "../components/decor/ThemedLoader.jsx";
+import api from "../lib/api.js";
 
 // Modals/Drawers
 import CartDrawer from "../components/cart/CartDrawer.jsx";
@@ -60,23 +61,34 @@ const fade = {
 
 export default function Home() {
   const [customOrderOpen, setCustomOrderOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+  }, [location]);
 
   // Fetch data
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await fetch("/api/products");
-      if (!res.ok) throw new Error("Failed to fetch products");
-      return res.json();
+      const res = await api.get("/api/products");
+      return res.data;
     }
   });
 
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await fetch("/api/categories");
-      if (!res.ok) throw new Error("Failed to fetch categories");
-      return res.json();
+      const res = await api.get("/api/categories");
+      return res.data;
     }
   });
 

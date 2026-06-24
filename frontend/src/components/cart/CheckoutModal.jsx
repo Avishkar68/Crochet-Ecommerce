@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, ArrowRight } from "lucide-react";
 import { useCart } from "../../context/CartContext.jsx";
+import api from "../../lib/api.js";
 
 export default function CheckoutModal() {
   const {
@@ -29,20 +30,17 @@ export default function CheckoutModal() {
 
     setIsCheckingOut(true);
     try {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const res = await api.post("/api/orders", orderData);
+      const data = res.data;
+      if (data.success) {
         setCheckoutSuccess(data.order);
         clearCart();
       } else {
         alert(data.error || "Failed to place order. Please try again.");
       }
     } catch (error) {
-      alert("An error occurred during checkout.");
+      const errorMessage = error.response?.data?.error || "An error occurred during checkout.";
+      alert(errorMessage);
     } finally {
       setIsCheckingOut(false);
     }
