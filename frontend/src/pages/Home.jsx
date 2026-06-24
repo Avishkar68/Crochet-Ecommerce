@@ -91,6 +91,9 @@ export default function Home() {
       return res.data;
     }
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen text-foreground pb-24 md:pb-0">
@@ -114,7 +117,7 @@ export default function Home() {
           <motion.div {...fade} className="relative order-2 md:order-1 paper rounded-3xl p-6 md:p-10 shadow-soft">
             <span className="tape -top-3 left-8 rotate-[-4deg]" />
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-brown">
-              Handmade<br/>with love,<br/>
+              Handmade<br />with love,<br />
               <span className="italic">made for you</span>
               <span className="text-rose"> ♡</span>
             </h1>

@@ -417,7 +417,7 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
         {/* Stats Grid */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           {[
             {
               label: "Total Sales",
@@ -481,11 +481,10 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-t-xl transition-all relative shrink-0 ${
-                activeTab === tab.id
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-t-xl transition-all relative shrink-0 ${activeTab === tab.id
                   ? "text-brown bg-cream border-t border-x border-border/80"
                   : "text-muted-foreground hover:text-brown hover:bg-cream/40"
-              }`}
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
@@ -537,12 +536,11 @@ export default function AdminDashboard() {
                           </div>
                           <div className="text-right">
                             <p className="font-semibold text-brown">₹{order.total.toFixed(2)}</p>
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] mt-1 font-medium capitalize ${
-                              order.status === "completed" ? "bg-sage/10 text-sage-dark" :
-                              order.status === "shipped" ? "bg-blue-50 text-blue-600" :
-                              order.status === "cancelled" ? "bg-rose-50 text-rose-dark" :
-                              "bg-amber-50 text-amber-600"
-                            }`}>
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] mt-1 font-medium capitalize ${order.status === "completed" ? "bg-sage/10 text-sage-dark" :
+                                order.status === "shipped" ? "bg-blue-50 text-blue-600" :
+                                  order.status === "cancelled" ? "bg-rose-50 text-rose-dark" :
+                                    "bg-amber-50 text-amber-600"
+                              }`}>
                               {order.status}
                             </span>
                           </div>
@@ -736,77 +734,138 @@ export default function AdminDashboard() {
                 {isLoadingProducts ? (
                   <TableSkeleton cols={5} rows={5} />
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead>
-                        <tr className="border-b border-border/40 text-muted-foreground">
-                          <th className="py-2.5 pb-4 font-semibold">Image</th>
-                          <th className="py-2.5 pb-4 font-semibold">Name</th>
-                          <th className="py-2.5 pb-4 font-semibold">Category</th>
-                          <th className="py-2.5 pb-4 font-semibold">Price</th>
-                          <th className="py-2.5 pb-4 font-semibold text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border/20 text-brown">
-                        {products
-                          .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                          .map(product => (
-                            <tr
-                              key={product._id}
-                              onClick={() => setSelectedProduct(product)}
-                              className="hover:bg-cream/70 transition cursor-pointer"
-                            >
-                              <td className="py-2.5 pr-2">
-                                <img
-                                  src={product.img}
-                                  alt={product.name}
-                                  className="w-10 h-10 object-cover rounded-lg border border-border/50"
-                                  onError={(e) => { e.target.src = "https://placehold.co/100x100?text=No+Img" }}
-                                />
-                              </td>
-                              <td className="py-2.5 font-medium pr-2">{product.name}</td>
-                              <td className="py-2.5 text-muted-foreground pr-2">{product.category}</td>
-                              <td className="py-2.5 font-semibold">₹{product.price.toFixed(2)}</td>
-                              <td className="py-2.5 text-right" onClick={(e) => e.stopPropagation()}>
-                                {confirmDeleteId === product._id ? (
-                                  <div className="flex justify-end gap-1.5">
+                  <>
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="border-b border-border/40 text-muted-foreground">
+                            <th className="py-2.5 pb-4 font-semibold">Image</th>
+                            <th className="py-2.5 pb-4 font-semibold">Name</th>
+                            <th className="py-2.5 pb-4 font-semibold">Category</th>
+                            <th className="py-2.5 pb-4 font-semibold">Price</th>
+                            <th className="py-2.5 pb-4 font-semibold text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/20 text-brown">
+                          {products
+                            .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                            .map(product => (
+                              <tr
+                                key={product._id}
+                                onClick={() => setSelectedProduct(product)}
+                                className="hover:bg-cream/70 transition cursor-pointer"
+                              >
+                                <td className="py-2.5 pr-2">
+                                  <img
+                                    src={product.img}
+                                    alt={product.name}
+                                    className="w-10 h-10 object-cover rounded-lg border border-border/50"
+                                    onError={(e) => { e.target.src = "https://placehold.co/100x100?text=No+Img" }}
+                                  />
+                                </td>
+                                <td className="py-2.5 font-medium pr-2">{product.name}</td>
+                                <td className="py-2.5 text-muted-foreground pr-2">{product.category}</td>
+                                <td className="py-2.5 font-semibold">₹{product.price.toFixed(2)}</td>
+                                <td className="py-2.5 text-right" onClick={(e) => e.stopPropagation()}>
+                                  {confirmDeleteId === product._id ? (
+                                    <div className="flex justify-end gap-1.5">
+                                      <button
+                                        onClick={() => deleteProductMutation.mutate(product._id)}
+                                        className="p-1 text-rose rounded hover:bg-rose/10"
+                                        title="Confirm delete"
+                                      >
+                                        <Check className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => setConfirmDeleteId(null)}
+                                        className="p-1 text-muted-foreground rounded hover:bg-muted"
+                                        title="Cancel"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  ) : (
                                     <button
-                                      onClick={() => deleteProductMutation.mutate(product._id)}
-                                      className="p-1 text-rose rounded hover:bg-rose/10"
-                                      title="Confirm delete"
+                                      onClick={() => setConfirmDeleteId(product._id)}
+                                      className="p-1.5 text-muted-foreground hover:text-rose-dark hover:bg-rose/5 rounded-lg transition"
+                                      title="Delete product"
                                     >
-                                      <Check className="w-4 h-4" />
+                                      <Trash2 className="w-4 h-4" />
                                     </button>
-                                    <button
-                                      onClick={() => setConfirmDeleteId(null)}
-                                      className="p-1 text-muted-foreground rounded hover:bg-muted"
-                                      title="Cancel"
-                                    >
-                                      <X className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <button
-                                    onClick={() => setConfirmDeleteId(product._id)}
-                                    className="p-1.5 text-muted-foreground hover:text-rose-dark hover:bg-rose/5 rounded-lg transition"
-                                    title="Delete product"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                )}
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                            <tr>
+                              <td colSpan="5" className="text-center py-8 text-muted-foreground">
+                                No products found.
                               </td>
                             </tr>
-                          ))}
-                        {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                          <tr>
-                            <td colSpan="5" className="text-center py-8 text-muted-foreground">
-                              No products found.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Cards View */}
+                    <div className="grid grid-cols-1 gap-4 md:hidden">
+                      {products
+                        .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                        .map(product => (
+                          <div
+                            key={product._id}
+                            onClick={() => setSelectedProduct(product)}
+                            className="paper rounded-xl p-4 shadow-soft border border-border/40 hover:bg-cream/40 transition cursor-pointer flex gap-4 items-center bg-cream"
+                          >
+                            <img
+                              src={product.img}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded-lg border border-border/50 shrink-0 bg-muted"
+                              onError={(e) => { e.target.src = "https://placehold.co/100x100?text=No+Img" }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-brown text-sm truncate">{product.name}</h4>
+                              <p className="text-muted-foreground text-xs">{product.category}</p>
+                              <p className="font-bold text-rose-dark text-xs mt-1">₹{product.price.toFixed(2)}</p>
+                            </div>
+                            <div onClick={(e) => e.stopPropagation()} className="shrink-0">
+                              {confirmDeleteId === product._id ? (
+                                <div className="flex gap-1.5">
+                                  <button
+                                    onClick={() => deleteProductMutation.mutate(product._id)}
+                                    className="p-1.5 text-rose rounded-lg bg-rose/10 hover:bg-rose/20"
+                                    title="Confirm delete"
+                                  >
+                                    <Check className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => setConfirmDeleteId(null)}
+                                    className="p-1.5 text-muted-foreground rounded-lg bg-muted hover:bg-muted/80"
+                                    title="Cancel"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setConfirmDeleteId(product._id)}
+                                  className="p-2 text-muted-foreground hover:text-rose-dark hover:bg-rose/5 rounded-lg transition"
+                                  title="Delete product"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground text-xs">
+                          No products found.
+                        </div>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </motion.div>
@@ -826,11 +885,10 @@ export default function AdminDashboard() {
                     <button
                       key={statusFilter}
                       onClick={() => setOrderFilter(statusFilter)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize border transition ${
-                        orderFilter === statusFilter
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize border transition ${orderFilter === statusFilter
                           ? "bg-rose text-cream border-rose"
                           : "border-border text-muted-foreground hover:bg-cream/40"
-                      }`}
+                        }`}
                     >
                       {statusFilter}
                     </button>
@@ -841,82 +899,137 @@ export default function AdminDashboard() {
               {isLoadingOrders ? (
                 <TableSkeleton cols={7} rows={4} />
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-border/40 text-muted-foreground">
-                        <th className="py-2.5 pb-4 font-semibold">Order ID</th>
-                        <th className="py-2.5 pb-4 font-semibold">Customer</th>
-                        <th className="py-2.5 pb-4 font-semibold">Address</th>
-                        <th className="py-2.5 pb-4 font-semibold">Items</th>
-                        <th className="py-2.5 pb-4 font-semibold">Total</th>
-                        <th className="py-2.5 pb-4 font-semibold">Date</th>
-                        <th className="py-2.5 pb-4 font-semibold text-right">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/20 text-brown">
-                      {orders
-                        .filter(o => orderFilter === "all" || o.status === orderFilter)
-                        .map(order => (
-                          <tr
-                            key={order._id}
-                            onClick={() => setSelectedOrder(order)}
-                            className="hover:bg-cream/70 transition align-top cursor-pointer"
-                          >
-                            <td className="py-4 font-semibold pr-2">{order.orderId}</td>
-                            <td className="py-4 pr-2">
-                              <p className="font-semibold">{order.name}</p>
-                              <p className="text-muted-foreground text-[10px]">{order.email}</p>
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-border/40 text-muted-foreground">
+                          <th className="py-2.5 pb-4 font-semibold">Order ID</th>
+                          <th className="py-2.5 pb-4 font-semibold">Customer</th>
+                          <th className="py-2.5 pb-4 font-semibold">Address</th>
+                          <th className="py-2.5 pb-4 font-semibold">Items</th>
+                          <th className="py-2.5 pb-4 font-semibold">Total</th>
+                          <th className="py-2.5 pb-4 font-semibold">Date</th>
+                          <th className="py-2.5 pb-4 font-semibold text-right">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/20 text-brown">
+                        {orders
+                          .filter(o => orderFilter === "all" || o.status === orderFilter)
+                          .map(order => (
+                            <tr
+                              key={order._id}
+                              onClick={() => setSelectedOrder(order)}
+                              className="hover:bg-cream/70 transition align-top cursor-pointer"
+                            >
+                              <td className="py-4 font-semibold pr-2">{order.orderId}</td>
+                              <td className="py-4 pr-2">
+                                <p className="font-semibold">{order.name}</p>
+                                <p className="text-muted-foreground text-[10px]">{order.email}</p>
+                              </td>
+                              <td className="py-4 text-muted-foreground text-[11px] max-w-[200px] pr-2 break-words">
+                                {order.address}
+                              </td>
+                              <td className="py-4 pr-2 max-w-[220px]">
+                                <div className="space-y-1 text-[11px]">
+                                  {order.items.map((item, index) => (
+                                    <div key={index} className="flex items-center gap-1.5">
+                                      <span className="text-muted-foreground shrink-0">{item.quantity}x</span>
+                                      <span className="truncate">{item.name}</span>
+                                      <span className="text-muted-foreground/60 shrink-0">(₹{item.price})</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                              <td className="py-4 font-semibold pr-2">₹{order.total.toFixed(2)}</td>
+                              <td className="py-4 text-muted-foreground shrink-0 pr-2">
+                                {new Date(order.date).toLocaleDateString()}
+                              </td>
+                              <td className="py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                                <select
+                                  value={order.status}
+                                  onChange={e =>
+                                    updateOrderMutation.mutate({ id: order._id, status: e.target.value })
+                                  }
+                                  className={`px-2.5 py-1 rounded-xl text-xs font-semibold uppercase tracking-wider outline-none border cursor-pointer border-transparent ${order.status === "completed" ? "bg-sage/10 text-sage-dark" :
+                                      order.status === "shipped" ? "bg-blue-50 text-blue-600" :
+                                        order.status === "cancelled" ? "bg-rose-50 text-rose-dark" :
+                                          "bg-amber-50 text-amber-600"
+                                    }`}
+                                >
+                                  <option value="pending">Pending</option>
+                                  <option value="shipped">Shipped</option>
+                                  <option value="completed">Completed</option>
+                                  <option value="cancelled">Cancelled</option>
+                                </select>
+                              </td>
+                            </tr>
+                          ))}
+                        {orders.filter(o => orderFilter === "all" || o.status === orderFilter).length === 0 && (
+                          <tr>
+                            <td colSpan="7" className="text-center py-12 text-muted-foreground">
+                              No orders found.
                             </td>
-                            <td className="py-4 text-muted-foreground text-[11px] max-w-[200px] pr-2 break-words">
-                              {order.address}
-                            </td>
-                            <td className="py-4 pr-2 max-w-[220px]">
-                              <div className="space-y-1 text-[11px]">
-                                {order.items.map((item, index) => (
-                                  <div key={index} className="flex items-center gap-1.5">
-                                    <span className="text-muted-foreground shrink-0">{item.quantity}x</span>
-                                    <span className="truncate">{item.name}</span>
-                                    <span className="text-muted-foreground/60 shrink-0">(₹{item.price})</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </td>
-                            <td className="py-4 font-semibold pr-2">₹{order.total.toFixed(2)}</td>
-                            <td className="py-4 text-muted-foreground shrink-0 pr-2">
-                              {new Date(order.date).toLocaleDateString()}
-                            </td>
-                            <td className="py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Cards View */}
+                  <div className="grid grid-cols-1 gap-4 md:hidden">
+                    {orders
+                      .filter(o => orderFilter === "all" || o.status === orderFilter)
+                      .map(order => (
+                        <div
+                          key={order._id}
+                          onClick={() => setSelectedOrder(order)}
+                          className="paper rounded-xl p-4 shadow-soft border border-border/40 hover:bg-cream/40 transition cursor-pointer space-y-3 bg-cream"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="font-semibold text-brown text-sm">{order.orderId}</span>
+                              <span className="text-muted-foreground text-[10px] block">{new Date(order.date).toLocaleDateString()}</span>
+                            </div>
+                            <div onClick={(e) => e.stopPropagation()}>
                               <select
                                 value={order.status}
                                 onChange={e =>
                                   updateOrderMutation.mutate({ id: order._id, status: e.target.value })
                                 }
-                                className={`px-2.5 py-1 rounded-xl text-xs font-semibold uppercase tracking-wider outline-none border cursor-pointer border-transparent ${
-                                  order.status === "completed" ? "bg-sage/10 text-sage-dark" :
-                                  order.status === "shipped" ? "bg-blue-50 text-blue-600" :
-                                  order.status === "cancelled" ? "bg-rose-50 text-rose-dark" :
-                                  "bg-amber-50 text-amber-600"
-                                }`}
+                                className={`px-2.5 py-1 rounded-xl text-[10px] font-semibold uppercase tracking-wider outline-none border cursor-pointer border-transparent ${order.status === "completed" ? "bg-sage/10 text-sage-dark" :
+                                    order.status === "shipped" ? "bg-blue-50 text-blue-600" :
+                                      order.status === "cancelled" ? "bg-rose-50 text-rose-dark" :
+                                        "bg-amber-50 text-amber-600"
+                                  }`}
                               >
                                 <option value="pending">Pending</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
-                            </td>
-                          </tr>
-                        ))}
-                      {orders.filter(o => orderFilter === "all" || o.status === orderFilter).length === 0 && (
-                        <tr>
-                          <td colSpan="7" className="text-center py-12 text-muted-foreground">
-                            No orders found.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                            </div>
+                          </div>
+
+                          <div className="text-xs space-y-1">
+                            <p className="font-semibold text-brown">{order.name} <span className="text-muted-foreground font-normal text-[10px]">({order.email})</span></p>
+                            <p className="text-muted-foreground text-[11px] line-clamp-1">{order.address}</p>
+                          </div>
+
+                          <div className="border-t border-border/30 pt-2 flex justify-between items-center">
+                            <span className="text-muted-foreground text-[10px]">{order.items.length} {order.items.length === 1 ? 'item' : 'items'}</span>
+                            <span className="font-bold text-rose-dark text-sm">₹{order.total.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    {orders.filter(o => orderFilter === "all" || o.status === orderFilter).length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground text-xs">
+                        No orders found.
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </motion.div>
           )}
@@ -935,11 +1048,10 @@ export default function AdminDashboard() {
                     <button
                       key={cFilter}
                       onClick={() => setCustomFilter(cFilter)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize border transition ${
-                        customFilter === cFilter
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize border transition ${customFilter === cFilter
                           ? "bg-rose text-cream border-rose"
                           : "border-border text-muted-foreground hover:bg-cream/40"
-                      }`}
+                        }`}
                     >
                       {cFilter}
                     </button>
@@ -950,44 +1062,133 @@ export default function AdminDashboard() {
               {isLoadingCustomOrders ? (
                 <TableSkeleton cols={7} rows={4} />
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-border/40 text-muted-foreground">
-                        <th className="py-2.5 pb-4 font-semibold">Req ID</th>
-                        <th className="py-2.5 pb-4 font-semibold">Customer</th>
-                        <th className="py-2.5 pb-4 font-semibold">Description</th>
-                        <th className="py-2.5 pb-4 font-semibold">Budget & Deadline</th>
-                        <th className="py-2.5 pb-4 font-semibold text-center">Reference</th>
-                        <th className="py-2.5 pb-4 font-semibold">Date</th>
-                        <th className="py-2.5 pb-4 font-semibold text-right">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/20 text-brown">
-                      {customOrders
-                        .filter(req => customFilter === "all" || req.status === customFilter)
-                        .map(request => (
-                          <tr
-                            key={request._id}
-                            onClick={() => setSelectedRequest(request)}
-                            className="hover:bg-cream/70 transition align-top cursor-pointer"
-                          >
-                            <td className="py-4 font-semibold pr-2">{request.requestId}</td>
-                            <td className="py-4 pr-2">
-                              <p className="font-semibold">{request.name}</p>
-                              <p className="text-muted-foreground text-[10px]">{request.email}</p>
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-border/40 text-muted-foreground">
+                          <th className="py-2.5 pb-4 font-semibold">Req ID</th>
+                          <th className="py-2.5 pb-4 font-semibold">Customer</th>
+                          <th className="py-2.5 pb-4 font-semibold">Description</th>
+                          <th className="py-2.5 pb-4 font-semibold">Budget & Deadline</th>
+                          <th className="py-2.5 pb-4 font-semibold text-center">Reference</th>
+                          <th className="py-2.5 pb-4 font-semibold">Date</th>
+                          <th className="py-2.5 pb-4 font-semibold text-right">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/20 text-brown">
+                        {customOrders
+                          .filter(req => customFilter === "all" || req.status === customFilter)
+                          .map(request => (
+                            <tr
+                              key={request._id}
+                              onClick={() => setSelectedRequest(request)}
+                              className="hover:bg-cream/70 transition align-top cursor-pointer"
+                            >
+                              <td className="py-4 font-semibold pr-2">{request.requestId}</td>
+                              <td className="py-4 pr-2">
+                                <p className="font-semibold">{request.name}</p>
+                                <p className="text-muted-foreground text-[10px]">{request.email}</p>
+                              </td>
+                              <td className="py-4 text-muted-foreground text-[11px] max-w-[260px] pr-2 break-words whitespace-pre-line">
+                                {request.description}
+                              </td>
+                              <td className="py-4 pr-2 text-[11px]">
+                                <p className="font-medium text-brown">Budget: {request.budget || "N/A"}</p>
+                                <p className="text-muted-foreground mt-0.5">
+                                  Deadline: {request.deadline ? new Date(request.deadline).toLocaleDateString() : "Flexible"}
+                                </p>
+                              </td>
+                              <td className="py-4 text-center pr-2" onClick={(e) => e.stopPropagation()}>
+                                {request.referenceImage ? (
+                                  <button
+                                    onClick={() => setLightboxImage(request.referenceImage)}
+                                    className="relative inline-block group cursor-pointer"
+                                    title="Click to zoom image"
+                                  >
+                                    <img
+                                      src={request.referenceImage}
+                                      alt="Reference"
+                                      className="w-10 h-10 object-cover rounded-lg border border-border hover:brightness-90 transition"
+                                      onError={(e) => { e.target.src = "https://placehold.co/100x100?text=No+Img" }}
+                                    />
+                                    <span className="absolute inset-0 bg-brown/20 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-lg transition">
+                                      <Eye className="w-3.5 h-3.5 text-cream" />
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <span className="text-[10px] text-muted-foreground/50">None</span>
+                                )}
+                              </td>
+                              <td className="py-4 text-muted-foreground pr-2">
+                                {new Date(request.date).toLocaleDateString()}
+                              </td>
+                              <td className="py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                                <select
+                                  value={request.status}
+                                  onChange={e =>
+                                    updateCustomOrderMutation.mutate({ id: request._id, status: e.target.value })
+                                  }
+                                  className={`px-2.5 py-1 rounded-xl text-xs font-semibold uppercase tracking-wider outline-none border cursor-pointer border-transparent ${request.status === "approved" ? "bg-sage/10 text-sage-dark" :
+                                      request.status === "declined" ? "bg-rose-50 text-rose-dark" :
+                                        "bg-amber-50 text-amber-600"
+                                    }`}
+                                >
+                                  <option value="reviewing">Reviewing</option>
+                                  <option value="approved">Approved</option>
+                                  <option value="declined">Declined</option>
+                                </select>
+                              </td>
+                            </tr>
+                          ))}
+                        {customOrders.filter(req => customFilter === "all" || req.status === customFilter).length === 0 && (
+                          <tr>
+                            <td colSpan="7" className="text-center py-12 text-muted-foreground">
+                              No requests found.
                             </td>
-                            <td className="py-4 text-muted-foreground text-[11px] max-w-[260px] pr-2 break-words whitespace-pre-line">
-                              {request.description}
-                            </td>
-                            <td className="py-4 pr-2 text-[11px]">
-                              <p className="font-medium text-brown">Budget: {request.budget || "N/A"}</p>
-                              <p className="text-muted-foreground mt-0.5">
-                                Deadline: {request.deadline ? new Date(request.deadline).toLocaleDateString() : "Flexible"}
-                              </p>
-                            </td>
-                            <td className="py-4 text-center pr-2" onClick={(e) => e.stopPropagation()}>
-                              {request.referenceImage ? (
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Cards View */}
+                  <div className="grid grid-cols-1 gap-4 md:hidden">
+                    {customOrders
+                      .filter(req => customFilter === "all" || req.status === customFilter)
+                      .map(request => (
+                        <div
+                          key={request._id}
+                          onClick={() => setSelectedRequest(request)}
+                          className="paper rounded-xl p-4 shadow-soft border border-border/40 hover:bg-cream/40 transition cursor-pointer space-y-3 bg-cream"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="font-semibold text-brown text-sm">{request.requestId}</span>
+                              <span className="text-muted-foreground text-[10px] block">{new Date(request.date).toLocaleDateString()}</span>
+                            </div>
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <select
+                                value={request.status}
+                                onChange={e =>
+                                  updateCustomOrderMutation.mutate({ id: request._id, status: e.target.value })
+                                }
+                                className={`px-2.5 py-1 rounded-xl text-[10px] font-semibold uppercase tracking-wider outline-none border cursor-pointer border-transparent ${request.status === "approved" ? "bg-sage/10 text-sage-dark" :
+                                    request.status === "declined" ? "bg-rose-50 text-rose-dark" :
+                                      "bg-amber-50 text-amber-600"
+                                  }`}
+                              >
+                                <option value="reviewing">Reviewing</option>
+                                <option value="approved">Approved</option>
+                                <option value="declined">Declined</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3">
+                            {request.referenceImage && (
+                              <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
                                 <button
                                   onClick={() => setLightboxImage(request.referenceImage)}
                                   className="relative inline-block group cursor-pointer"
@@ -996,49 +1197,38 @@ export default function AdminDashboard() {
                                   <img
                                     src={request.referenceImage}
                                     alt="Reference"
-                                    className="w-10 h-10 object-cover rounded-lg border border-border hover:brightness-90 transition"
+                                    className="w-14 h-14 object-cover rounded-lg border border-border"
                                     onError={(e) => { e.target.src = "https://placehold.co/100x100?text=No+Img" }}
                                   />
-                                  <span className="absolute inset-0 bg-brown/20 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-lg transition">
-                                    <Eye className="w-3.5 h-3.5 text-cream" />
-                                  </span>
                                 </button>
-                              ) : (
-                                <span className="text-[10px] text-muted-foreground/50">None</span>
-                              )}
-                            </td>
-                            <td className="py-4 text-muted-foreground pr-2">
-                              {new Date(request.date).toLocaleDateString()}
-                            </td>
-                            <td className="py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                              <select
-                                value={request.status}
-                                onChange={e =>
-                                  updateCustomOrderMutation.mutate({ id: request._id, status: e.target.value })
-                                }
-                                className={`px-2.5 py-1 rounded-xl text-xs font-semibold uppercase tracking-wider outline-none border cursor-pointer border-transparent ${
-                                  request.status === "approved" ? "bg-sage/10 text-sage-dark" :
-                                  request.status === "declined" ? "bg-rose-50 text-rose-dark" :
-                                  "bg-amber-50 text-amber-600"
-                                }`}
-                              >
-                                <option value="reviewing">Reviewing</option>
-                                <option value="approved">Approved</option>
-                                <option value="declined">Declined</option>
-                              </select>
-                            </td>
-                          </tr>
-                        ))}
-                      {customOrders.filter(req => customFilter === "all" || req.status === customFilter).length === 0 && (
-                        <tr>
-                          <td colSpan="7" className="text-center py-12 text-muted-foreground">
-                            No requests found.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0 text-xs">
+                              <p className="font-semibold text-brown">{request.name}</p>
+                              <p className="text-muted-foreground text-[10px] mb-1">{request.email}</p>
+                              <p className="text-muted-foreground text-[11px] line-clamp-2">{request.description}</p>
+                            </div>
+                          </div>
+
+                          <div className="border-t border-border/30 pt-2 flex justify-between text-[11px]">
+                            <div>
+                              <span className="text-muted-foreground">Budget: </span>
+                              <span className="font-semibold text-brown">{request.budget || "Flexible"}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Deadline: </span>
+                              <span className="font-semibold text-brown">{request.deadline ? new Date(request.deadline).toLocaleDateString() : "Flexible"}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    {customOrders.filter(req => customFilter === "all" || req.status === customFilter).length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground text-xs">
+                        No requests found.
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </motion.div>
           )}
@@ -1147,12 +1337,12 @@ export default function AdminDashboard() {
                 <X className="w-5 h-5" />
               </button>
               <h3 className="font-display text-2xl italic text-brown mb-4">Product Details</h3>
-              
+
               <div className="flex flex-col items-center">
                 <div className="w-48 h-48 rounded-2xl overflow-hidden bg-muted border border-border/50 mb-4">
                   <img src={selectedProduct.img} alt={selectedProduct.name} className="w-full h-full object-cover" />
                 </div>
-                
+
                 <table className="w-full text-left text-xs border-collapse">
                   <tbody>
                     <tr className="border-b border-border/30"><td className="py-2.5 font-semibold text-muted-foreground">Product ID</td><td className="py-2.5 font-mono select-all text-right">{selectedProduct._id}</td></tr>
@@ -1189,15 +1379,15 @@ export default function AdminDashboard() {
               <button onClick={() => setSelectedOrder(null)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-muted text-muted-foreground">
                 <X className="w-5 h-5" />
               </button>
-              
-              <div className="flex justify-between items-start mb-4">
+
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                 <div>
                   <h3 className="font-display text-2xl italic text-brown">Order Invoice</h3>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">{selectedOrder.orderId}</p>
                 </div>
                 <button
                   onClick={() => printOrderReceipt(selectedOrder)}
-                  className="btn-rose !py-1.5 !px-3.5 text-xs flex items-center gap-1.5 font-semibold shadow-soft"
+                  className="btn-rose !py-1.5 !px-3.5 text-xs flex items-center gap-1.5 font-semibold shadow-soft self-start sm:self-auto"
                 >
                   Print Receipt 🖨️
                 </button>
@@ -1269,7 +1459,7 @@ export default function AdminDashboard() {
               <button onClick={() => setSelectedRequest(null)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-muted text-muted-foreground">
                 <X className="w-5 h-5" />
               </button>
-              
+
               <div>
                 <h3 className="font-display text-2xl italic text-brown">Custom Request</h3>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">{selectedRequest.requestId}</p>
@@ -1293,7 +1483,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Budget and Deadline */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-cream/40 p-3 rounded-xl border border-border/40">
                     <h4 className="font-semibold text-brown mb-0.5">Est. Budget</h4>
                     <p className="font-bold text-rose-dark">{selectedRequest.budget || "Flexible"}</p>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -56,6 +56,9 @@ export default function Products() {
       return res.data;
     }
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories = [
     "All",
@@ -101,7 +104,7 @@ export default function Products() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 text-center relative z-10">
           <Sprig className="absolute left-6 top-4 w-6 h-10 opacity-60 hidden md:block" />
           <Floral className="absolute right-12 top-4 w-20 h-10 opacity-70 hidden md:block" />
-          
+
           {/* Breadcrumbs */}
           <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground/80 mb-3">
             <a href="/" className="hover:text-rose-dark transition">Home</a>
@@ -120,11 +123,11 @@ export default function Products() {
 
       {/* Main Catalog Section */}
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        
+
         {/* Controls Layout */}
         <div className="paper rounded-3xl p-5 shadow-soft border border-border/40 mb-8 space-y-4">
           <div className="grid md:grid-cols-[1fr_auto] items-center gap-4">
-            
+
             {/* Search Input */}
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
@@ -147,7 +150,7 @@ export default function Products() {
 
             {/* Right Controls: Sort & Layout Toggles */}
             <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-              
+
               {/* Sort Selector */}
               <div className="flex items-center gap-2 border border-border bg-cream/40 px-3 py-2 rounded-2xl">
                 <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
@@ -166,11 +169,10 @@ export default function Products() {
               <div className="flex items-center bg-muted/60 p-1 rounded-xl">
                 <button
                   onClick={() => setLayoutMode("grid")}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    layoutMode === "grid"
-                      ? "bg-cream text-brown shadow-soft"
-                      : "text-muted-foreground hover:text-brown"
-                  }`}
+                  className={`p-1.5 rounded-lg transition-colors ${layoutMode === "grid"
+                    ? "bg-cream text-brown shadow-soft"
+                    : "text-muted-foreground hover:text-brown"
+                    }`}
                   aria-label="Grid View"
                   title="Grid View"
                 >
@@ -178,11 +180,10 @@ export default function Products() {
                 </button>
                 <button
                   onClick={() => setLayoutMode("list")}
-                  className={`p-1.5 rounded-lg transition-colors ${
-                    layoutMode === "list"
-                      ? "bg-cream text-brown shadow-soft"
-                      : "text-muted-foreground hover:text-brown"
-                  }`}
+                  className={`p-1.5 rounded-lg transition-colors ${layoutMode === "list"
+                    ? "bg-cream text-brown shadow-soft"
+                    : "text-muted-foreground hover:text-brown"
+                    }`}
                   aria-label="List View"
                   title="List View"
                 >
@@ -199,11 +200,10 @@ export default function Products() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1.5 text-xs font-semibold rounded-full border transition-all shrink-0 ${
-                  selectedCategory === cat
-                    ? "bg-rose text-cream border-rose shadow-soft"
-                    : "border-border text-muted-foreground bg-cream/20 hover:bg-cream/55 hover:text-brown"
-                }`}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-full border transition-all shrink-0 ${selectedCategory === cat
+                  ? "bg-rose text-cream border-rose shadow-soft"
+                  : "border-border text-muted-foreground bg-cream/20 hover:bg-cream/55 hover:text-brown"
+                  }`}
               >
                 {cat}
               </button>
@@ -328,9 +328,8 @@ export default function Products() {
                         />
                         <button
                           onClick={() => toggleWishlist(productId)}
-                          className={`absolute top-2 right-2 w-8 h-8 grid place-items-center rounded-full bg-cream/90 backdrop-blur shadow-soft hover:text-rose-dark transition ${
-                            wishlisted ? "text-rose-dark" : "text-muted-foreground"
-                          }`}
+                          className={`absolute top-2 right-2 w-8 h-8 grid place-items-center rounded-full bg-cream/90 backdrop-blur shadow-soft hover:text-rose-dark transition ${wishlisted ? "text-rose-dark" : "text-muted-foreground"
+                            }`}
                           aria-label="Wishlist"
                         >
                           <Heart className={`w-4 h-4 ${wishlisted ? "fill-rose" : ""}`} />
@@ -349,9 +348,8 @@ export default function Products() {
                           {Array.from({ length: 5 }).map((_, idxStars) => (
                             <Heart
                               key={idxStars}
-                              className={`w-3.5 h-3.5 ${
-                                idxStars < 5 ? "fill-rose text-rose" : "text-muted-foreground/30"
-                              }`}
+                              className={`w-3.5 h-3.5 ${idxStars < 5 ? "fill-rose text-rose" : "text-muted-foreground/30"
+                                }`}
                             />
                           ))}
                           <span className="text-[11px] text-muted-foreground ml-1">
