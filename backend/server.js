@@ -14,6 +14,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import newsletterRoutes from './routes/newsletterRoutes.js';
 import customOrderRoutes from './routes/customOrderRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 
 // Model imports (for auto-seeding)
 import Product from './models/Product.js';
@@ -41,6 +42,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/custom-orders', customOrderRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Error Handling
 app.use(errorHandler);

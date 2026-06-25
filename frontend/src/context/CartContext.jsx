@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "../lib/api.js";
 
 const CartContext = createContext();
 
@@ -7,12 +8,74 @@ export function CartProvider({ children }) {
     const saved = localStorage.getItem("cart");
     return saved ? JSON.parse(saved) : [];
   });
+  const [mobileNumber, setMobileNumber] = useState(() => {
+    return localStorage.getItem("mobileNumber") || "";
+  });
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
+  // Sync cart with localStorage and backend (when cart changes)
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    if (mobileNumber) {
+      api.post("/api/cart", { mobileNumber, items: cart })
+        .catch((err) => console.error("Error syncing cart to backend:", err));
+    }
+  }, [cart, mobileNumber]);
+
+  // Fetch latest cart from backend on mount or when mobile number is set
+  useEffect(() => {
+    if (mobileNumber) {
+      api.get(`/api/cart/${mobileNumber}`)
+        .then((res) => {
+          if (res.data && res.data.success && res.data.items) {
+            setCart(res.data.items);
+          }
+        })
+        .catch((err) => console.error("Error fetching cart from backend:", err));
+    }
+  }, [mobileNumber]);
+
+  const syncMobileNumber = async (number) => {
+    try {
+      const res = await api.get(`/api/cart/${number}`);
+      let dbItems = [];
+      if (res.data && res.data.success && res.data.items) {
+        dbItems = res.data.items;
+      }
+
+      // Merge local cart items with database cart items
+      const merged = [...dbItems];
+      cart.forEach((localItem) => {
+        const localId = localItem._id || localItem.id;
+        const existingIdx = merged.findIndex(
+          (item) => (item._id || item.id) === localId
+        );
+        if (existingIdx > -1) {
+          merged[existingIdx].quantity += localItem.quantity;
+        } else {
+          merged.push(localItem);
+        }
+      });
+
+      // Update local state and backend
+      setCart(merged);
+      setMobileNumber(number);
+      localStorage.setItem("mobileNumber", number);
+
+      // Sync merged cart to backend
+      await api.post("/api/cart", { mobileNumber: number, items: merged });
+      return { success: true };
+    } catch (error) {
+      console.error("Error syncing mobile number:", error);
+      throw error;
+    }
+  };
+
+  const disconnectMobileNumber = () => {
+    setMobileNumber("");
+    localStorage.removeItem("mobileNumber");
+  };
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -68,7 +131,10 @@ export function CartProvider({ children }) {
         cartCount,
         cartSubtotal,
         freeShippingThreshold,
-        isFreeShipping
+        isFreeShipping,
+        mobileNumber,
+        syncMobileNumber,
+        disconnectMobileNumber
       }}
     >
       {children}

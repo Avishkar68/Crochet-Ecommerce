@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, X, Trash2, Minus, Plus, ArrowRight, Sparkles } from "lucide-react";
 import { useCart } from "../../context/CartContext.jsx";
@@ -15,8 +15,33 @@ export default function CartDrawer() {
     cartCount,
     cartSubtotal,
     freeShippingThreshold,
-    isFreeShipping
+    isFreeShipping,
+    mobileNumber,
+    syncMobileNumber,
+    disconnectMobileNumber
   } = useCart();
+
+  const [mobileInput, setMobileInput] = useState("");
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState("");
+
+  const handleMobileSubmit = async (e) => {
+    e.preventDefault();
+    if (!mobileInput || mobileInput.length < 10) {
+      setSyncError("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    setIsSyncing(true);
+    setSyncError("");
+    try {
+      await syncMobileNumber(mobileInput);
+      setMobileInput("");
+    } catch (err) {
+      setSyncError("Failed to sync cart. Please try again.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -46,6 +71,60 @@ export default function CartDrawer() {
                 <button onClick={() => setCartOpen(false)} className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition">
                   <X className="w-5 h-5" />
                 </button>
+              </div>
+
+              {/* Mobile Sync Section */}
+              <div className="px-6 py-4 bg-cream/45 border-b border-border/40 text-brown">
+                {mobileNumber ? (
+                  <div className="flex items-center justify-between bg-sage/10 border border-sage/20 rounded-2xl p-3.5">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[10px] uppercase tracking-wider text-sage-dark font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />
+                        Live Synced
+                      </span>
+                      <span className="text-sm font-semibold text-brown">{mobileNumber}</span>
+                    </div>
+                    <button
+                      onClick={disconnectMobileNumber}
+                      className="text-xs text-rose-dark hover:text-rose hover:underline font-semibold transition"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-peach/15 border border-peach/30 rounded-2xl p-4">
+                    <p className="text-xs font-bold text-brown flex items-center gap-1.5">
+                      <span>📱</span> Instant Cloud Save
+                    </p>
+                    <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+                      Save your basket to the cloud! Enter your mobile number to retrieve and update your cart across devices without an account.
+                    </p>
+                    <form onSubmit={handleMobileSubmit} className="mt-3 flex gap-2">
+                      <input
+                        type="tel"
+                        placeholder="Mobile number"
+                        value={mobileInput}
+                        onChange={(e) => {
+                          setMobileInput(e.target.value.replace(/\D/g, ""));
+                          setSyncError("");
+                        }}
+                        maxLength={15}
+                        required
+                        className="flex-1 min-w-0 px-3.5 py-1.5 rounded-xl border border-border bg-cream outline-none text-xs focus:border-rose focus:ring-1 focus:ring-rose text-brown transition placeholder:text-muted-foreground/60"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSyncing}
+                        className="btn-rose text-[11px] !py-1.5 !px-3 font-semibold shadow-sm shrink-0 disabled:opacity-60 flex items-center gap-1 cursor-pointer"
+                      >
+                        {isSyncing ? "Syncing..." : "Sync Basket"}
+                      </button>
+                    </form>
+                    {syncError && (
+                      <p className="text-[10px] text-rose-dark font-medium mt-1.5 pl-1">⚠️ {syncError}</p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Cart Items */}

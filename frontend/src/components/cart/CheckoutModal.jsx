@@ -11,7 +11,9 @@ export default function CheckoutModal() {
     cart,
     cartCount,
     cartSubtotal,
-    clearCart
+    clearCart,
+    mobileNumber,
+    syncMobileNumber
   } = useCart();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -20,16 +22,28 @@ export default function CheckoutModal() {
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const orderData = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      address: formData.get("address"),
-      items: cart,
-      total: cartSubtotal,
-    };
+    const enteredMobile = formData.get("mobileNumber");
 
     setIsCheckingOut(true);
     try {
+      // If mobileNumber was not set, sync it now
+      if (!mobileNumber && enteredMobile) {
+        try {
+          await syncMobileNumber(enteredMobile);
+        } catch (err) {
+          console.error("Failed to sync mobile number during checkout:", err);
+        }
+      }
+
+      const orderData = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        address: formData.get("address"),
+        mobileNumber: enteredMobile || mobileNumber,
+        items: cart,
+        total: cartSubtotal,
+      };
+
       const res = await api.post("/api/orders", orderData);
       const data = res.data;
       if (data.success) {
@@ -82,6 +96,12 @@ export default function CheckoutModal() {
                 <div className="border border-border/80 rounded-2xl p-4 bg-cream/40 my-6 text-left space-y-2">
                   <p className="text-xs font-semibold text-brown">Shipping Address:</p>
                   <p className="text-sm text-muted-foreground leading-snug">{checkoutSuccess.address}</p>
+                  {checkoutSuccess.mobileNumber && (
+                    <>
+                      <p className="text-xs font-semibold text-brown mt-2">Mobile Number:</p>
+                      <p className="text-sm text-muted-foreground">{checkoutSuccess.mobileNumber}</p>
+                    </>
+                  )}
                   <p className="text-xs font-semibold text-brown mt-2">Order Summary:</p>
                   <div className="space-y-1">
                     {checkoutSuccess.items.map((item) => (
@@ -124,6 +144,23 @@ export default function CheckoutModal() {
                       className="w-full px-4 py-2.5 rounded-xl border border-border bg-cream/50 outline-none focus:border-rose focus:ring-1 focus:ring-rose text-sm transition"
                       placeholder="emma@example.com"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-brown mb-1">Mobile Number</label>
+                    <input
+                      type="tel"
+                      name="mobileNumber"
+                      required
+                      defaultValue={mobileNumber}
+                      disabled={!!mobileNumber}
+                      pattern="[0-9]{10,15}"
+                      title="Please enter a valid mobile number (10 to 15 digits)"
+                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-cream/50 outline-none focus:border-rose focus:ring-1 focus:ring-rose text-sm transition disabled:opacity-60 text-brown"
+                      placeholder="9876543210"
+                    />
+                    {mobileNumber && (
+                      <p className="text-[10px] text-sage-dark font-medium mt-1">✓ Synced with cloud basket</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-brown mb-1">Shipping Address</label>

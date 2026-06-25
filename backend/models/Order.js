@@ -13,6 +13,7 @@ const orderSchema = new mongoose.Schema({
   orderId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   email: { type: String, required: true },
+  mobileNumber: { type: String },
   address: { type: String, required: true },
   items: [orderItemSchema],
   total: { type: Number, required: true },

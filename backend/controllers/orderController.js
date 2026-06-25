@@ -2,7 +2,7 @@ import Order from '../models/Order.js';
 
 export async function createOrder(req, res, next) {
   try {
-    const { name, email, address, items, total } = req.body;
+    const { name, email, mobileNumber, address, items, total } = req.body;
 
     if (!name || !email || !address || !items || !items.length) {
       return res.status(400).json({ error: 'Missing required checkout information' });
@@ -23,6 +23,7 @@ export async function createOrder(req, res, next) {
       orderId,
       name,
       email,
+      mobileNumber,
       address,
       items: mappedItems,
       total
